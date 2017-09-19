@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "Timer.h"
+#include "timer.hpp"
 
 using namespace caffe;
 const int DETEC_CLS_NUM = 1;

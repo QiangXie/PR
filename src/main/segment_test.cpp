@@ -1,4 +1,4 @@
-#include "chars_segment.h"
+#include "segment.hpp"
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>

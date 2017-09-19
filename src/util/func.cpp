@@ -1,4 +1,4 @@
-#include <func.h>
+#include <func.hpp>
 #include <vector>
 
 using namespace cv;

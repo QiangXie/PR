@@ -1,4 +1,4 @@
-#include "char_recognition.h"
+#include "recognition.hpp"
 #include <string>
 using namespace std;
 using namespace swpr;

@@ -4,10 +4,10 @@ set(CMAKE_C_COMPILER g++)
 
 set(
 	LIB_SRC_LIST
-	chars_segment.cpp
+	segment.cpp
 	func.cpp
-	char_recognition.cpp
-	ssd.cpp
+	recognition.cpp
+	detection.cpp
 	)
 
 include_directories(

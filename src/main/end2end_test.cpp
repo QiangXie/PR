@@ -1,9 +1,8 @@
-#include "ssd.hpp"
-#include "char_recognition.h"
+#include "detection.hpp"
+#include "recognition.hpp"
 #include <opencv2/opencv.hpp>
 #include <codecvt>
-#include "chars_segment.h"
-#include "char_recognition.h"
+#include "segment.hpp"
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 

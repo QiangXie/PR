@@ -1,4 +1,4 @@
-#include "char_recognition.h"
+#include "recognition.hpp"
 
 namespace swpr{
 

@@ -1,5 +1,5 @@
-#include "chars_segment.h"
-#include "char_recognition.h"
+#include "segment.hpp"
+#include "recognition.hpp"
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>

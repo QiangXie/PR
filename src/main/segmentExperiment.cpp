@@ -1,8 +1,8 @@
 #include <string>
 #include <fstream>
 #include <opencv2/opencv.hpp>
-#include <func.h>
-#include <config.h>
+#include <func.hpp>
+#include <config.hpp>
 #include <opencv2/core/types_c.h>
 
 swpr::Color getPlateColor(Mat input)

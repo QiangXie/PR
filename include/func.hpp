@@ -2,8 +2,8 @@
 #define FUNC_H_
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include "character.h"
-#include "config.h"
+#include "character.hpp"
+#include "config.hpp"
 
 namespace swpr{
 	const int HISTSIZE = 8;

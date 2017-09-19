@@ -1,7 +1,7 @@
-#include "chars_segment.h"
-#include "config.h"
-#include "character.h"
-#include "func.h"
+#include "segment.hpp"
+#include "config.hpp"
+#include "character.hpp"
+#include "func.hpp"
 
 
 namespace swpr {

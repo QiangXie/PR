@@ -1,5 +1,5 @@
-#include "ssd.hpp"     
-#include "Timer.h"
+#include "detection.hpp"     
+#include "timer.hpp"
 
 
 #define IS_SINGLE 0

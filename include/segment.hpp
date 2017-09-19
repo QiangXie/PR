@@ -4,9 +4,9 @@
 
 #include "opencv2/opencv.hpp"
 #include <map>
-#include "character.h"
-#include "func.h"
-#include "config.h"
+#include "character.hpp"
+#include "func.hpp"
+#include "config.hpp"
 
 using namespace cv;
 

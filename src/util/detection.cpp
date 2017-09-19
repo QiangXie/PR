@@ -1,4 +1,4 @@
-#include "ssd.hpp"
+#include "detection.hpp"
 
 Detector::Detector(const string & model_file,
 		   const string & weights_file)

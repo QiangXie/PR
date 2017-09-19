@@ -1,5 +1,5 @@
-#include "chars_segment.h" 
-#include "func.h"
+#include "segment.hpp" 
+#include "func.hpp"
 #include <map>
 #include <codecvt>
 #include <string>
