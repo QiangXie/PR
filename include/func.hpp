@@ -1,5 +1,5 @@
-#ifndef FUNC_H_
-#define FUNC_H_
+#ifndef _FUNC_HPP_
+#define _FUNC_HPP_
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include "character.hpp"

@@ -1,5 +1,5 @@
-#ifndef _CHAR_RECOGNITION_H_
-#define _CHAR_RECOGNITION_H_
+#ifndef _RECOGNITION_HPP_
+#define _RECOGNITION_HPP_
 #include "caffe/caffe.hpp"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>

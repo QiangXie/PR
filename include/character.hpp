@@ -1,5 +1,5 @@
-#ifndef CHARACTER_H_
-#define CHARACTER_H_
+#ifndef _CHARACTER_HPP_
+#define _CHARACTER_HPP_
 
 #include "opencv2/opencv.hpp"
 

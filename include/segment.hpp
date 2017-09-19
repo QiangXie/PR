@@ -1,5 +1,5 @@
-#ifndef CHARSSEGMENT_H_
-#define CHARSSEGMENT_H_
+#ifndef _CHARSSEGMENT_HPP_
+#define _CHARSSEGMENT_HPP_
 #include <glog/logging.h>
 
 #include "opencv2/opencv.hpp"

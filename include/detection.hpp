@@ -1,5 +1,5 @@
-#ifndef _SSD_H_
-#define _SSD_H_
+#ifndef _DETECTION_HPP_
+#define _DETECTION_HPP_
 #include <caffe/caffe.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -14,9 +14,8 @@
 #include "timer.hpp"
 
 using namespace caffe;
-const int DETEC_CLS_NUM = 1;
-const float CONF_THRESH = 0.2;
-const int BATCH_SIZE = 8;
+
+namespace swpr{
 
 class Detector{
 	public:
@@ -37,5 +36,7 @@ class Detector{
 		cv::Mat mean_;
 				
 };
+
+}
 
 #endif

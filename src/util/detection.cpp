@@ -1,4 +1,7 @@
 #include "detection.hpp"
+#include "config.hpp"
+
+namespace swpr{
 
 Detector::Detector(const string & model_file,
 		   const string & weights_file)
@@ -337,4 +340,6 @@ void Detector::Preprocess(const cv::Mat& img,
 	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
 		== net_->input_blobs()[0]->cpu_data())
 		<< "Input channels are not wrapping the input layer of the network.";	
+}
+
 }
