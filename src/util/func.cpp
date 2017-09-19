@@ -61,18 +61,12 @@ namespace swpr{
 		for (int i = 0; i < grid_y; i++) {
 	    		for (int j = 0; j < grid_x; j++) {
 	      			Mat src_cell = Mat(src, Range(i*height, (i + 1)*height), Range(j*width, (j + 1)*width));
-	      			if (type == BLUE) {
+	      			if (type == LIGHT) {
 					cv::threshold(src_cell, src_cell, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY);
 	      			}
-	      			else if (type == YELLOW) {
+	      			else if (type == DEEP) {
 					cv::threshold(src_cell, src_cell, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY_INV);
 	      			} 
-	      			else if (type == WHITE) {
-					cv::threshold(src_cell, src_cell, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY_INV);
-	      			}
-	      			else {
-					cv::threshold(src_cell, src_cell, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY);
-	      			}
 	    		}
 	  	}
 	}

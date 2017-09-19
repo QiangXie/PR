@@ -18,11 +18,11 @@ swpr::Color getPlateColor(Mat input)
 	Mat inputBgrHistogram = swpr::bgrHistogram(input);
 	std::map<double, swpr::Color> distance;
 	distance.insert(std::pair<double,swpr::Color>(
-				cv::compareHist(inputBgrHistogram,whiteBgrHistogram,CV_COMP_CHISQR),swpr::WHITE));	
+				cv::compareHist(inputBgrHistogram,whiteBgrHistogram,CV_COMP_CHISQR),swpr::DEEP));	
 	distance.insert(std::pair<double,swpr::Color>(
-				cv::compareHist(inputBgrHistogram,blueBgrHistogram,CV_COMP_CHISQR),swpr::BLUE));
+				cv::compareHist(inputBgrHistogram,blueBgrHistogram,CV_COMP_CHISQR),swpr::LIGHT));
 	distance.insert(std::pair<double,swpr::Color>(
-				cv::compareHist(inputBgrHistogram,yellowBgrHistogram,CV_COMP_CHISQR),swpr::WHITE));
+				cv::compareHist(inputBgrHistogram,yellowBgrHistogram,CV_COMP_CHISQR),swpr::DEEP));
 	std::map<double,swpr::Color>::iterator i;
 	double nearestDistance = (distance.begin())->first;
 	swpr::Color plateColor = (distance.begin())->second;
@@ -67,10 +67,10 @@ swpr::Color getPlateColor2(const cv::Mat & plateImage)
 		}
 	}
 	if(counterLessThanAveragePix < counterMoreThanAveragePix){	
-		return swpr::YELLOW;
+		return swpr::DEEP;
 	}
 	else{
-		return swpr::BLUE;
+		return swpr::LIGHT;
 	}
 }
 

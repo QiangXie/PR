@@ -77,43 +77,22 @@ void CharsSegment::judgeChinese(cv::Mat in, cv::Mat& out, Color plateType) {
 	Mat roiOstu, roiAdap;
 	bool isChinese = true;
 
-	if (1) {
-		if (BLUE == plateType) {
-			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
-		}
-		else if (YELLOW == plateType) {
-			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
-		}
-		else if (WHITE == plateType) {
-			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
-		}
-		else {
-			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY);
-		}
-		roiOstu = preprocessChar(roiOstu);
-		if (0) {
-			imshow("roiOstu", roiOstu);
-			waitKey(0);
-			destroyWindow("roiOstu");
-		}
-		//auto character = CharsIdentify::instance()->identifyChinese(roiOstu, valOstu, isChinese);
+	if (LIGHT == plateType) {
+		threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
 	}
-	if (1) {
-		if (BLUE == plateType) {
-			adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
-		}
-		else if (YELLOW == plateType) {
-			adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
-		}
-		else if (WHITE == plateType) {
-			adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
-		}
-		else {
-			adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
-		}
-		roiAdap = preprocessChar(roiAdap);
-	//auto character = CharsIdentify::instance()->identifyChinese(roiAdap, valAdap, isChinese);
+	else if (DEEP == plateType) {
+		threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
 	}
+	roiOstu = preprocessChar(roiOstu);
+
+	if (LIGHT == plateType) {
+		adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
+	}
+	else if (DEEP == plateType) {
+		adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
+	}
+
+	roiAdap = preprocessChar(roiAdap);
 
 	if (valOstu >= valAdap) {
 		out = roiOstu;
@@ -157,39 +136,27 @@ bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateType, float
 		Mat auxRoi = image(rect);
 
 		Mat roiOstu, roiAdap;
-		if (1) {
-			if (BLUE == plateType) {
-				threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
-			}
-			else if (YELLOW == plateType) {
-				threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
-			}
-			else if (WHITE == plateType) {
-				threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
-			}
-			else {
-				threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY);
-			}
-			roiOstu = preprocessChar(roiOstu, kChineseSize);
 
-			CCharacter charCandidateOstu;
-			charCandidateOstu.setCharacterPos(rect);
-			charCandidateOstu.setCharacterMat(roiOstu);
-			charCandidateOstu.setIsChinese(isChinese);
-			charCandidateVec.push_back(charCandidateOstu);
+		if (LIGHT == plateType) {
+			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
 		}
+		else if (DEEP == plateType) {
+			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
+		}
+		roiOstu = preprocessChar(roiOstu, kChineseSize);
+
+		CCharacter charCandidateOstu;
+		charCandidateOstu.setCharacterPos(rect);
+		charCandidateOstu.setCharacterMat(roiOstu);
+		charCandidateOstu.setIsChinese(isChinese);
+		charCandidateVec.push_back(charCandidateOstu);
+
 		if (useAdapThreshold) {
-			if (BLUE == plateType) {
+			if (LIGHT == plateType) {
 				adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
 			}
-			else if (YELLOW == plateType) {
+			else if (DEEP == plateType) {
 				adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
-			}
-			else if (WHITE == plateType) {
-				adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
-			}
-			else {
-				adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
 			}
 			roiAdap = preprocessChar(roiAdap, kChineseSize);
 
@@ -200,7 +167,6 @@ bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateType, float
 			charCandidateVec.push_back(charCandidateAdap);
 		}
 	}
-	//CharsIdentify::instance()->classifyChinese(charCandidateVec);
 
 	double overlapThresh = 0.1;
 	NMStoCharacter(charCandidateVec, overlapThresh);
@@ -246,10 +212,10 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 		}
 	}
 	if(counterLessThanAveragePix < counterMoreThanAveragePix){	
-		return YELLOW;
+		return DEEP;
 	}
 	else{
-		return BLUE;
+		return LIGHT;
 	}
 }
 
@@ -351,19 +317,12 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 			judgeChinese(auxRoi, newRoi, plateType);
 		}
 		else {
-			if (BLUE == plateType) {  
+			if (LIGHT == plateType) {  
 				threshold(auxRoi, newRoi, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
 			}
-			else if (YELLOW == plateType) {
+			else if (DEEP == plateType) {
 				threshold(auxRoi, newRoi, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
 			}
-			else if (WHITE == plateType) {
-				threshold(auxRoi, newRoi, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY_INV);
-			}
-			else {
-				threshold(auxRoi, newRoi, 0, 255, CV_THRESH_OTSU + CV_THRESH_BINARY);
-			}
-
 			newRoi = preprocessChar(newRoi);
 		}
 
