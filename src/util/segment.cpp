@@ -71,24 +71,24 @@ cv::Mat CharsSegment::preprocessChar(cv::Mat in) {
 
 
 //! choose the bese threshold method for chinese
-void CharsSegment::judgeChinese(cv::Mat in, cv::Mat& out, Color plateType) {
+void CharsSegment::judgeChinese(cv::Mat in, cv::Mat& out, Color plateColor) {
 	Mat auxRoi = in;
 	float valOstu = 1.0, valAdap = 1.0;
 	Mat roiOstu, roiAdap;
 	bool isChinese = true;
 
-	if (LIGHT == plateType) {
+	if (LIGHT == plateColor) {
 		threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
 	}
-	else if (DEEP == plateType) {
+	else if (DEEP == plateColor) {
 		threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
 	}
 	roiOstu = preprocessChar(roiOstu);
 
-	if (LIGHT == plateType) {
+	if (LIGHT == plateColor) {
 		adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
 	}
-	else if (DEEP == plateType) {
+	else if (DEEP == plateColor) {
 		adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
 	}
 
@@ -102,7 +102,7 @@ void CharsSegment::judgeChinese(cv::Mat in, cv::Mat& out, Color plateType) {
 	}
 }
 
-bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateType, float slideLengthRatio, bool useAdapThreshold) {
+bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateColor, float slideLengthRatio, bool useAdapThreshold) {
 	std::vector<CCharacter> charCandidateVec;
 
 	Rect maxrect = mr;
@@ -137,10 +137,10 @@ bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateType, float
 
 		Mat roiOstu, roiAdap;
 
-		if (LIGHT == plateType) {
+		if (LIGHT == plateColor) {
 			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
 		}
-		else if (DEEP == plateType) {
+		else if (DEEP == plateColor) {
 			threshold(auxRoi, roiOstu, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
 		}
 		roiOstu = preprocessChar(roiOstu, kChineseSize);
@@ -152,10 +152,10 @@ bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateType, float
 		charCandidateVec.push_back(charCandidateOstu);
 
 		if (useAdapThreshold) {
-			if (LIGHT == plateType) {
+			if (LIGHT == plateColor) {
 				adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 3, 0);
 			}
-			else if (DEEP == plateType) {
+			else if (DEEP == plateColor) {
 				adaptiveThreshold(auxRoi, roiAdap, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
 			}
 			roiAdap = preprocessChar(roiAdap, kChineseSize);
@@ -224,30 +224,26 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	  	LOG(FATAL) << "Error:Image to segment is empty.";
 	}
 
+  	Mat inputGrey;
+  	cvtColor(input, inputGrey, CV_BGR2GRAY);
+  	Color plateColor = this->getPlateColor(inputGrey);
 
-  	Mat input_grey;
-  	cvtColor(input, input_grey, CV_BGR2GRAY);
-  	Color plateType = this->getPlateColor(input_grey);
-
-	Mat img_threshold;
-
-	img_threshold = input_grey.clone();
-	spatial_ostu(img_threshold, 1, 1, plateType);
+	Mat imgThreshold = inputGrey.clone();
+	spatial_ostu(imgThreshold, 1, 1, plateColor);
 
 	// remove liuding and hor lines
 	// also judge weather is plate use jump count
 
-	if (!clearLiuDing(img_threshold)) {
+	if (!clearLiuDing(imgThreshold)) {
 		return 0x02;
 	}
-	clearLiuDing(img_threshold);
+	clearLiuDing(imgThreshold);
 
-
-	Mat img_contours;
-	img_threshold.copyTo(img_contours);
+	Mat imgContours;
+	imgThreshold.copyTo(imgContours);
 
 	std::vector<std::vector<Point> > contours;
-	findContours(img_contours,
+	findContours(imgContours,
 	       contours,               // a vector of contours
 	       CV_RETR_EXTERNAL,       // retrieve the external contours
 	       CV_CHAIN_APPROX_NONE);  // all pixels of each contours
@@ -257,14 +253,13 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 
 	while (itc != contours.end()) {
 		Rect mr = boundingRect(Mat(*itc));
-		Mat auxRoi(img_threshold, mr);
+		Mat auxRoi(imgThreshold, mr);
 
 		if (verifyCharSizes(auxRoi)) {
 			vecRect.push_back(mr);
 		}
 		++itc;
 	}
-
 
 	if (vecRect.size() == 0) {
 		return 0x03;
@@ -302,7 +297,7 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 		Rect mr = newSortedRect[i];
 
 		// Mat auxRoi(img_threshold, mr);
-		Mat auxRoi(input_grey, mr);
+		Mat auxRoi(inputGrey, mr);
 		Mat newRoi;
 		//Mat newRoi(input,mr);
 
@@ -310,17 +305,18 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 			if (useSlideWindow) {
 				float slideLengthRatio = 0.1f;
 				//float slideLengthRatio = CParams::instance()->getParam1f();
-				if (!slideChineseWindow(input_grey, mr, newRoi, plateType, slideLengthRatio, useAdapThreshold))
-				  judgeChinese(auxRoi, newRoi, plateType);
+				if (!slideChineseWindow(inputGrey, mr, newRoi, plateColor, slideLengthRatio, useAdapThreshold))
+				  judgeChinese(auxRoi, newRoi, plateColor);
 			}
-			else
-			judgeChinese(auxRoi, newRoi, plateType);
+			else{
+				judgeChinese(auxRoi, newRoi, plateColor);
+			}
 		}
 		else {
-			if (LIGHT == plateType) {  
+			if (LIGHT == plateColor) {  
 				threshold(auxRoi, newRoi, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
 			}
-			else if (DEEP == plateType) {
+			else if (DEEP == plateColor) {
 				threshold(auxRoi, newRoi, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
 			}
 			newRoi = preprocessChar(newRoi);
@@ -328,7 +324,35 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 
 		 resultVec.push_back(newRoi);
 	}
+	
+	if(resultVec.size() != 7){
+		std::time_t now = std::time(nullptr);
+		std::stringstream ssImName;
+		ssImName << "./segment_fault/" << now << ".jpg";
+		std::string imName = ssImName.str();
 
+		Mat imgToSave;
+		Mat3b inputGreyBGR,imgThresholdBGR;
+		cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
+		cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
+
+
+		int cols = inputGrey.cols;
+		int rows = inputGrey.rows * 4;
+		imgToSave.create(rows,cols,inputGreyBGR.type());
+		//ori img
+		input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
+		//greyscale img
+		inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
+		//bin img
+		imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
+		for(int i = 0; i < newSortedRect.size();++i){
+			rectangle(imgThresholdBGR,newSortedRect[i],Scalar(0,255,0),1);
+		}
+		imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*3, imgThreshold.cols, imgThreshold.rows)));
+		
+		imwrite(imName,imgToSave);	
+	}	
   	return 0;
 }
 
