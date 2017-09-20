@@ -324,35 +324,36 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 
 		 resultVec.push_back(newRoi);
 	}
-	
-	if(resultVec.size() != 7){
-		std::time_t now = std::time(nullptr);
-		std::stringstream ssImName;
-		ssImName << "./segment_fault/" << now << ".jpg";
-		std::string imName = ssImName.str();
+	if(SAVE_SEGMENT_FLAG){	
+		if(resultVec.size() != 7){
+			std::time_t now = std::time(nullptr);
+			std::stringstream ssImName;
+			ssImName << "./segment_fault/" << now << ".jpg";
+			std::string imName = ssImName.str();
 
-		Mat imgToSave;
-		Mat3b inputGreyBGR,imgThresholdBGR;
-		cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
-		cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
+			Mat imgToSave;
+			Mat3b inputGreyBGR,imgThresholdBGR;
+			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
+			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
 
 
-		int cols = inputGrey.cols;
-		int rows = inputGrey.rows * 4;
-		imgToSave.create(rows,cols,inputGreyBGR.type());
-		//ori img
-		input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
-		//greyscale img
-		inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
-		//bin img
-		imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
-		for(int i = 0; i < newSortedRect.size();++i){
-			rectangle(imgThresholdBGR,newSortedRect[i],Scalar(0,255,0),1);
-		}
-		imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*3, imgThreshold.cols, imgThreshold.rows)));
-		
-		imwrite(imName,imgToSave);	
-	}	
+			int cols = inputGrey.cols;
+			int rows = inputGrey.rows * 4;
+			imgToSave.create(rows,cols,inputGreyBGR.type());
+			//ori img
+			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
+			//greyscale img
+			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
+			//bin img
+			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
+			for(int i = 0; i < newSortedRect.size();++i){
+				rectangle(imgThresholdBGR,newSortedRect[i],Scalar(0,255,0),1);
+			}
+			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*3, imgThreshold.cols, imgThreshold.rows)));
+			
+			imwrite(imName,imgToSave);	
+		}	
+	}
   	return 0;
 }
 
