@@ -292,6 +292,7 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 
 	if (vecRect.size() == 0) {
 		LOG(INFO) << "Error: can't find rect in contours.";
+		return 0x01;
 	}
 
 	vector<Rect> sortedRect(vecRect);
@@ -309,6 +310,7 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	else{
 		//Todo: figure out why use this
 		LOG(INFO) << "Warring: Get Chinese Rect failure.";
+		return 0x02;
 	}
 
 	vector<Rect> newSortedRect;
@@ -318,6 +320,7 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	if (newSortedRect.size() == 0) {
 		//Todo: figure out why use this
 		LOG(INFO) << "Warring: newSortedRect.size() == 0";
+		return 0x03;
 	}
 
 	bool useSlideWindow = true;
