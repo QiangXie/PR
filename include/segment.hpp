@@ -71,6 +71,7 @@ class CharsSegment {
   float m_BluePercent;
   float m_WhitePercent;
   int m_debug;
+  Mat maskImage;
 };
 
 }

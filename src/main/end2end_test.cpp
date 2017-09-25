@@ -175,6 +175,9 @@ int main(int argc, char ** argv)
 		}
 	}
 	LOG(INFO) << "Test " << num_of_imgs << " images.";
+	LOG(INFO) << "Detection fault num: " << num_of_detect_fault;
+	LOG(INFO) << "Segment fault num: " << num_of_segment_fault;
+	LOG(INFO) << "Rec fault num: " << num_of_plate_rec_fault;
 	LOG(INFO) << "Detector accuracy: " << 
 		static_cast<float>(num_of_imgs - num_of_detect_fault) / 
 		static_cast<float>(num_of_imgs);

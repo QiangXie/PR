@@ -17,6 +17,7 @@ namespace swpr {
 		m_BluePercent = DEFAULT_BLUEPERCEMT;
 		m_WhitePercent = DEFAULT_WHITEPERCEMT;
 		m_debug = DEFAULT_DEBUG;
+		this->maskImage = imread("./maks_bin_0.jpg",IMREAD_GRAYSCALE);
 	}
 
 
@@ -185,6 +186,9 @@ bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateColor, floa
 }
 
 Color CharsSegment::getPlateColor(Mat greyImage){
+	//Mat maskImage = imread("./maks_bin_0.jpg",IMREAD_GRAYSCALE);
+	int counter = 0;
+
 	double pixSum = 0;
 	int counterMoreThanAveragePix = 0;
 	int counterLessThanAveragePix = 0;
@@ -194,14 +198,20 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 
 	for(int i = 0; i < nr; ++i){
 		const uchar* data = greyImage.ptr<uchar>(i);
+		const uchar* dataMask = maskImage.ptr<uchar>(i);
 		for(int j = 0; j < nl; ++j){
-			pixSum += data[j]; 
+			if(dataMask[j] > 0){	
+				pixSum += data[j]; 
+				counter++;
+			}
 			historgram[data[j]]++;
 		}
 	}
+
+	//get Otsu threshold
 	int gSum0 = 0;
 	int gSum1 = 0;
-	int T = 0;
+	int threshold_otsu = 0;
 	double u0 = 0,u1 = 0;
 	int N = greyImage.rows*greyImage.cols;
 	double tempg = -1;
@@ -228,12 +238,15 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 		g = w0*w1*(u0-u1)*(u0-u1); 
 		if (tempg<g){
 			tempg = g;  
-			T = i;  
+			threshold_otsu = i;  
 		}
 	}
-	double pixAverage = pixSum / (greyImage.rows * greyImage.cols * greyImage.channels());
+	//double pixAverage = pixSum / (greyImage.rows * greyImage.cols * greyImage.channels());
+	
+	//get mask area average pix value
+	double pixAverage = pixSum / counter;
 
-	for(int i = 0; i < nr; ++i){
+	/*for(int i = 0; i < nr; ++i){
 		const uchar* data = greyImage.ptr<uchar>(i);
 		for(int j = 0; j < nl; ++j){
 			if(data[j] > T){
@@ -250,6 +263,12 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 	}
 	else{
 		return LIGHT;
+	}*/
+	if(threshold_otsu >= pixAverage){	
+		return LIGHT;
+	}
+	else{
+		return DEEP;
 	}
 }
 
@@ -269,6 +288,30 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	// also judge weather is plate use jump count
 
 	if (!clearLiuDing(imgThreshold)) {
+		if(SAVE_SEGMENT_FLAG){	
+			std::time_t now = std::time(nullptr);
+			std::stringstream ssImName;
+			ssImName << "./segment_fault_02/" << now << ".jpg";
+			std::string imName = ssImName.str();
+
+			Mat imgToSave;
+			Mat3b inputGreyBGR,imgThresholdBGR;
+			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
+			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
+
+
+			int cols = inputGrey.cols;
+			int rows = inputGrey.rows * 3;
+			imgToSave.create(rows,cols,inputGreyBGR.type());
+			//ori img
+			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
+			//greyscale img
+			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
+			//bin img
+			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
+			
+			imwrite(imName,imgToSave);	
+		}
 		return 0x02;
 	}
 	clearLiuDing(imgThreshold);
@@ -296,6 +339,30 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	}
 
 	if (vecRect.size() == 0) {
+		if(SAVE_SEGMENT_FLAG){	
+			std::time_t now = std::time(nullptr);
+			std::stringstream ssImName;
+			ssImName << "./segment_fault_03/" << now << ".jpg";
+			std::string imName = ssImName.str();
+
+			Mat imgToSave;
+			Mat3b inputGreyBGR,imgThresholdBGR;
+			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
+			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
+
+
+			int cols = inputGrey.cols;
+			int rows = inputGrey.rows * 3;
+			imgToSave.create(rows,cols,inputGreyBGR.type());
+			//ori img
+			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
+			//greyscale img
+			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
+			//bin img
+			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
+			
+			imwrite(imName,imgToSave);	
+		}
 		return 0x03;
 	}
 
@@ -312,6 +379,30 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	    chineseRect = GetChineseRect(sortedRect[specIndex]);
 	}
 	else{
+		if(SAVE_SEGMENT_FLAG){	
+			std::time_t now = std::time(nullptr);
+			std::stringstream ssImName;
+			ssImName << "./segment_fault_04/" << now << ".jpg";
+			std::string imName = ssImName.str();
+
+			Mat imgToSave;
+			Mat3b inputGreyBGR,imgThresholdBGR;
+			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
+			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
+
+
+			int cols = inputGrey.cols;
+			int rows = inputGrey.rows * 3;
+			imgToSave.create(rows,cols,inputGreyBGR.type());
+			//ori img
+			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
+			//greyscale img
+			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
+			//bin img
+			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
+			
+			imwrite(imName,imgToSave);	
+		}
 		return 0x04;
 	}
 
@@ -320,6 +411,30 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	RebuildRect(sortedRect, newSortedRect, specIndex);
 
 	if (newSortedRect.size() == 0) {
+		if(SAVE_SEGMENT_FLAG){	
+			std::time_t now = std::time(nullptr);
+			std::stringstream ssImName;
+			ssImName << "./segment_fault_05/" << now << ".jpg";
+			std::string imName = ssImName.str();
+
+			Mat imgToSave;
+			Mat3b inputGreyBGR,imgThresholdBGR;
+			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
+			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
+
+
+			int cols = inputGrey.cols;
+			int rows = inputGrey.rows * 3;
+			imgToSave.create(rows,cols,inputGreyBGR.type());
+			//ori img
+			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
+			//greyscale img
+			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
+			//bin img
+			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
+			
+			imwrite(imName,imgToSave);	
+		}
 		return 0x05;
 	}
 
