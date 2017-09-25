@@ -190,11 +190,45 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 	int counterLessThanAveragePix = 0;
 	int nr = greyImage.rows;
 	int nl = greyImage.cols*greyImage.channels();	
+	vector<int> historgram(256,0);
 
 	for(int i = 0; i < nr; ++i){
 		const uchar* data = greyImage.ptr<uchar>(i);
 		for(int j = 0; j < nl; ++j){
 			pixSum += data[j]; 
+			historgram[data[j]]++;
+		}
+	}
+	int gSum0 = 0;
+	int gSum1 = 0;
+	int T = 0;
+	double u0 = 0,u1 = 0;
+	int N = greyImage.rows*greyImage.cols;
+	double tempg = -1;
+	double g = -1;
+	double N0 = 0,N1 = 0,w0 = 0,w1 = 0;
+	for(int i = 0;i < 256;++i){
+		gSum0 = 0;
+		gSum1 = 0;
+		N0 += historgram[i];
+		N1 = N - N0;
+		if(0 == N1){
+			break;
+		}
+		w0 = N0/N;
+		w1 = 1 - w0;
+		for(int j = 0; j <= i;j++){
+			gSum0 += j*historgram[j];
+		}
+		u0 = gSum0/N0;
+		for(int k = i+1; k < 256;k++){
+			gSum1 += k*historgram[k];
+		}
+		u1 = gSum1/N1;
+		g = w0*w1*(u0-u1)*(u0-u1); 
+		if (tempg<g){
+			tempg = g;  
+			T = i;  
 		}
 	}
 	double pixAverage = pixSum / (greyImage.rows * greyImage.cols * greyImage.channels());
@@ -202,7 +236,7 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 	for(int i = 0; i < nr; ++i){
 		const uchar* data = greyImage.ptr<uchar>(i);
 		for(int j = 0; j < nl; ++j){
-			if(data[j] > pixAverage){
+			if(data[j] > T){
 				counterMoreThanAveragePix++;
 			}
 			else{
@@ -353,6 +387,13 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 			
 			imwrite(imName,imgToSave);	
 		}	
+		else{
+			std::time_t now = std::time(nullptr);
+			std::stringstream ssImName;
+			ssImName << "./segment_success/" << now << ".jpg";
+			std::string imName = ssImName.str(); 
+			imwrite(imName,imgThreshold);
+		}
 	}
   	return 0;
 }
