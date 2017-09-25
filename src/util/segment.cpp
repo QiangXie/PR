@@ -186,7 +186,6 @@ bool slideChineseWindow(Mat& image, Rect mr, Mat& newRoi, Color plateColor, floa
 }
 
 Color CharsSegment::getPlateColor(Mat greyImage){
-	//Mat maskImage = imread("./maks_bin_0.jpg",IMREAD_GRAYSCALE);
 	int counter = 0;
 
 	double pixSum = 0;
@@ -241,29 +240,10 @@ Color CharsSegment::getPlateColor(Mat greyImage){
 			threshold_otsu = i;  
 		}
 	}
-	//double pixAverage = pixSum / (greyImage.rows * greyImage.cols * greyImage.channels());
 	
 	//get mask area average pix value
 	double pixAverage = pixSum / counter;
 
-	/*for(int i = 0; i < nr; ++i){
-		const uchar* data = greyImage.ptr<uchar>(i);
-		for(int j = 0; j < nl; ++j){
-			if(data[j] > T){
-				counterMoreThanAveragePix++;
-			}
-			else{
-				counterLessThanAveragePix++;
-			}
-
-		}
-	}
-	if(counterLessThanAveragePix < counterMoreThanAveragePix){	
-		return DEEP;
-	}
-	else{
-		return LIGHT;
-	}*/
 	if(threshold_otsu >= pixAverage){	
 		return LIGHT;
 	}
@@ -284,36 +264,8 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	Mat imgThreshold = inputGrey.clone();
 	spatial_ostu(imgThreshold, 1, 1, plateColor);
 
-	// remove liuding and hor lines
-	// also judge weather is plate use jump count
-
-	if (!clearLiuDing(imgThreshold)) {
-		if(SAVE_SEGMENT_FLAG){	
-			std::time_t now = std::time(nullptr);
-			std::stringstream ssImName;
-			ssImName << "./segment_fault_02/" << now << ".jpg";
-			std::string imName = ssImName.str();
-
-			Mat imgToSave;
-			Mat3b inputGreyBGR,imgThresholdBGR;
-			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
-			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
-
-
-			int cols = inputGrey.cols;
-			int rows = inputGrey.rows * 3;
-			imgToSave.create(rows,cols,inputGreyBGR.type());
-			//ori img
-			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
-			//greyscale img
-			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
-			//bin img
-			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
-			
-			imwrite(imName,imgToSave);	
-		}
-		return 0x02;
-	}
+	// remove liuding and hor lines also judge weather is plate use jump count
+	// Todo: figure out why clear LiuDing
 	clearLiuDing(imgThreshold);
 
 	Mat imgContours;
@@ -339,31 +291,7 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	}
 
 	if (vecRect.size() == 0) {
-		if(SAVE_SEGMENT_FLAG){	
-			std::time_t now = std::time(nullptr);
-			std::stringstream ssImName;
-			ssImName << "./segment_fault_03/" << now << ".jpg";
-			std::string imName = ssImName.str();
-
-			Mat imgToSave;
-			Mat3b inputGreyBGR,imgThresholdBGR;
-			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
-			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
-
-
-			int cols = inputGrey.cols;
-			int rows = inputGrey.rows * 3;
-			imgToSave.create(rows,cols,inputGreyBGR.type());
-			//ori img
-			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
-			//greyscale img
-			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
-			//bin img
-			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
-			
-			imwrite(imName,imgToSave);	
-		}
-		return 0x03;
+		LOG(INFO) << "Error: can't find rect in contours.";
 	}
 
 	vector<Rect> sortedRect(vecRect);
@@ -379,31 +307,8 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	    chineseRect = GetChineseRect(sortedRect[specIndex]);
 	}
 	else{
-		if(SAVE_SEGMENT_FLAG){	
-			std::time_t now = std::time(nullptr);
-			std::stringstream ssImName;
-			ssImName << "./segment_fault_04/" << now << ".jpg";
-			std::string imName = ssImName.str();
-
-			Mat imgToSave;
-			Mat3b inputGreyBGR,imgThresholdBGR;
-			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
-			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
-
-
-			int cols = inputGrey.cols;
-			int rows = inputGrey.rows * 3;
-			imgToSave.create(rows,cols,inputGreyBGR.type());
-			//ori img
-			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
-			//greyscale img
-			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
-			//bin img
-			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
-			
-			imwrite(imName,imgToSave);	
-		}
-		return 0x04;
+		//Todo: figure out why use this
+		LOG(INFO) << "Warring: Get Chinese Rect failure.";
 	}
 
 	vector<Rect> newSortedRect;
@@ -411,49 +316,22 @@ int CharsSegment::charsSegment(Mat input, std::vector<Mat>& resultVec) {
 	RebuildRect(sortedRect, newSortedRect, specIndex);
 
 	if (newSortedRect.size() == 0) {
-		if(SAVE_SEGMENT_FLAG){	
-			std::time_t now = std::time(nullptr);
-			std::stringstream ssImName;
-			ssImName << "./segment_fault_05/" << now << ".jpg";
-			std::string imName = ssImName.str();
-
-			Mat imgToSave;
-			Mat3b inputGreyBGR,imgThresholdBGR;
-			cvtColor(inputGrey,inputGreyBGR,COLOR_GRAY2BGR);
-			cvtColor(imgThreshold,imgThresholdBGR,COLOR_GRAY2BGR);
-
-
-			int cols = inputGrey.cols;
-			int rows = inputGrey.rows * 3;
-			imgToSave.create(rows,cols,inputGreyBGR.type());
-			//ori img
-			input.copyTo(imgToSave(Rect(0, 0, inputGrey.cols, inputGrey.rows)));
-			//greyscale img
-			inputGreyBGR.copyTo(imgToSave(Rect(0, inputGrey.rows, imgThreshold.cols, imgThreshold.rows)));
-			//bin img
-			imgThresholdBGR.copyTo(imgToSave(Rect(0, inputGrey.rows*2, imgThreshold.cols, imgThreshold.rows)));
-			
-			imwrite(imName,imgToSave);	
-		}
-		return 0x05;
+		//Todo: figure out why use this
+		LOG(INFO) << "Warring: newSortedRect.size() == 0";
 	}
 
 	bool useSlideWindow = true;
 	bool useAdapThreshold = true;
-	//bool useAdapThreshold = CParams::instance()->getParam1b();
 	
 	for (size_t i = 0; i < newSortedRect.size(); i++) {
 		Rect mr = newSortedRect[i];
 
-		// Mat auxRoi(img_threshold, mr);
 		Mat auxRoi(inputGrey, mr);
 		Mat newRoi;
-		//Mat newRoi(input,mr);
 
 		if (i == 0) {
 			if (useSlideWindow) {
 				float slideLengthRatio = 0.1f;
-				//float slideLengthRatio = CParams::instance()->getParam1f();
 				if (!slideChineseWindow(inputGrey, mr, newRoi, plateColor, slideLengthRatio, useAdapThreshold))
 				  judgeChinese(auxRoi, newRoi, plateColor);
 			}
