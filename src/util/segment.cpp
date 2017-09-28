@@ -358,6 +358,101 @@ namespace swpr {
 
 			resultVec.push_back(newRoi);
 		}
+		
+		if(resultVec.size() != 7){
+			resultVec.clear();
+			Mat imgErode;
+			Mat element = getStructuringElement(MORPH_RECT, Size(3, 3));
+			erode(imgThreshold,imgErode, element);
+			imgErode.copyTo(imgThreshold);
+
+			Mat imgContours;
+			imgThreshold.copyTo(imgContours);
+
+			std::vector<std::vector<Point> > contours;
+			findContours(imgContours,
+					contours,               // a vector of contours
+					CV_RETR_EXTERNAL,       // retrieve the external contours
+					CV_CHAIN_APPROX_NONE);  // all pixels of each contours
+
+			vector<vector<Point> >::iterator itc = contours.begin();
+			vector<Rect> vecRect;
+
+			while (itc != contours.end()) {
+				Rect mr = boundingRect(Mat(*itc));
+				Mat auxRoi(imgThreshold, mr);
+
+				if (verifyCharSizes(auxRoi)) {
+					vecRect.push_back(mr);
+				}
+				++itc;
+			}
+
+			if (vecRect.size() == 0) {
+				LOG(INFO) << "Error: can't find rect in contours.";
+				return 0x01;
+			}
+
+			vector<Rect> sortedRect(vecRect);
+			std::sort(sortedRect.begin(), sortedRect.end(),
+					[](const Rect& r1, const Rect& r2) { return r1.x < r2.x; });
+
+			size_t specIndex = 0;
+
+			specIndex = GetSpecificRect(sortedRect);
+
+			Rect chineseRect;
+			if (specIndex < sortedRect.size()){
+				chineseRect = GetChineseRect(sortedRect[specIndex]);
+			}
+			else{
+				//Todo: figure out why use this
+				LOG(INFO) << "Warring: Get Chinese Rect failure.";
+				return 0x02;
+			}
+
+			vector<Rect> newSortedRect;
+			newSortedRect.push_back(chineseRect);
+			RebuildRect(sortedRect, newSortedRect, specIndex);
+
+			if (newSortedRect.size() == 0) {
+				//Todo: figure out why use this
+				LOG(INFO) << "Warring: newSortedRect.size() == 0";
+				return 0x03;
+			}
+
+			bool useSlideWindow = true;
+			bool useAdapThreshold = true;
+
+			for (size_t i = 0; i < newSortedRect.size(); i++) {
+				Rect mr = newSortedRect[i];
+
+				Mat auxRoi(inputGrey, mr);
+				Mat newRoi;
+
+				if (i == 0) {
+					if (useSlideWindow) {
+						float slideLengthRatio = 0.1f;
+						if (!slideChineseWindow(inputGrey, mr, newRoi, plateColor, slideLengthRatio, useAdapThreshold))
+							judgeChinese(auxRoi, newRoi, plateColor);
+					}
+					else{
+						judgeChinese(auxRoi, newRoi, plateColor);
+					}
+				}
+				else {
+					if (LIGHT == plateColor) {  
+						threshold(auxRoi, newRoi, 0, 255, CV_THRESH_BINARY + CV_THRESH_OTSU);
+					}
+					else if (DEEP == plateColor) {
+						threshold(auxRoi, newRoi, 0, 255, CV_THRESH_BINARY_INV + CV_THRESH_OTSU);
+					}
+					newRoi = preprocessChar(newRoi);
+				}
+
+				resultVec.push_back(newRoi);
+			}
+		}
 		if(SAVE_SEGMENT_FLAG){	
 			if(resultVec.size() != 7){
 				std::time_t now = std::time(nullptr);

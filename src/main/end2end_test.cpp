@@ -10,7 +10,7 @@ using namespace swpr;
 #define RECTANGLE 0
 #define THRESHOLD_DETECT_IOU 0.8
 
-DEFINE_int32(gpu, 0, 
+DEFINE_int32(gpu, 11, 
 		"The GPU ID to be used");
 DEFINE_string(img_list, "./list.txt",
 		"List of images to be test");
