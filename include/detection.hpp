@@ -17,25 +17,25 @@ using namespace caffe;
 
 namespace swpr{
 
-class Detector{
-	public:
-		Detector(const string & model_file,
-			 const string & weights_file);
-		std::vector<std::vector<int> > Detect(const cv::Mat & img);
-		std::vector<std::vector<std::vector<int> > > DetectBatch(const std::vector<cv::Mat> & imgs);
-	private:
-		void SetMean(const string& mean_file, const string& mean_value);
-		void WrapInputLayerBatch(std::vector< std::vector<cv::Mat> >* input_batch);
-		void WrapInputLayer(std::vector<cv::Mat>* input_channels);
-		void PreprocessBatch(const vector<cv::Mat> imgs,std::vector< std::vector<cv::Mat> >* input_batch);
-		void Preprocess(const cv::Mat& img,std::vector<cv::Mat>* input_channels);
+	class Detector{
+		public:
+			Detector(const string & model_file,
+					const string & weights_file);
+			std::vector<std::vector<int> > Detect(const cv::Mat & img);
+			std::vector<std::vector<std::vector<int> > > DetectBatch(const std::vector<cv::Mat> & imgs);
+		private:
+			void SetMean(const string& mean_file, const string& mean_value);
+			void WrapInputLayerBatch(std::vector< std::vector<cv::Mat> >* input_batch);
+			void WrapInputLayer(std::vector<cv::Mat>* input_channels);
+			void PreprocessBatch(const vector<cv::Mat> imgs,std::vector< std::vector<cv::Mat> >* input_batch);
+			void Preprocess(const cv::Mat& img,std::vector<cv::Mat>* input_channels);
 
-		shared_ptr<Net<float> > net_;
-		cv::Size input_geometry_;
-		int num_channels_;
-		cv::Mat mean_;
-				
-};
+			shared_ptr<Net<float> > net_;
+			cv::Size input_geometry_;
+			int num_channels_;
+			cv::Mat mean_;
+
+	};
 
 }
 

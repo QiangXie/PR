@@ -3,9 +3,9 @@
 namespace swpr{
 
 	Classifier::Classifier(const string& model_file,
-			       const string& trained_file,
-			       const string& mean_file,
-			       const string& label_file) {
+			const string& trained_file,
+			const string& mean_file,
+			const string& label_file) {
 		Caffe::set_mode(Caffe::GPU);
 
 		/* Load the network. */
@@ -38,7 +38,7 @@ namespace swpr{
 	}
 
 	static bool PairCompare(const std::pair<float, int>& lhs,
-				const std::pair<float, int>& rhs) {
+			const std::pair<float, int>& rhs) {
 		return lhs.first > rhs.first;
 	}
 
@@ -98,7 +98,7 @@ namespace swpr{
 		cv::merge(channels, mean);
 
 		/* Compute the global mean pixel value and create a mean image
-		* filled with this value. */
+		 * filled with this value. */
 		cv::Scalar channel_mean = cv::mean(mean);
 		mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
 	}
@@ -106,7 +106,7 @@ namespace swpr{
 	std::vector<float> Classifier::Predict(const cv::Mat& img) {
 		Blob<float>* input_layer = net_->input_blobs()[0];
 		input_layer->Reshape(1, num_channels_,
-			       input_geometry_.height, input_geometry_.width);
+				input_geometry_.height, input_geometry_.width);
 		/* Forward dimension change to all layers. */
 		net_->Reshape();
 
@@ -144,8 +144,8 @@ namespace swpr{
 	}
 
 	void Classifier::Preprocess(const cv::Mat& img,
-				    std::vector<cv::Mat>* input_channels) {
-	  /* Convert the input image to the input image format of the network. */
+			std::vector<cv::Mat>* input_channels) {
+		/* Convert the input image to the input image format of the network. */
 		cv::Mat sample;
 		if (img.channels() == 3 && num_channels_ == 1){
 			cv::cvtColor(img, sample, cv::COLOR_BGR2GRAY);
@@ -183,13 +183,13 @@ namespace swpr{
 		cv::subtract(sample_float, mean_, sample_normalized);
 
 		/* This operation will write the separate BGR planes directly to the
-		* input layer of the network because it is wrapped by the cv::Mat
-		* objects in input_channels. */
+		 * input layer of the network because it is wrapped by the cv::Mat
+		 * objects in input_channels. */
 		cv::split(sample_normalized, *input_channels);
 
 		CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
-			== net_->input_blobs()[0]->cpu_data())
-		<< "Input channels are not wrapping the input layer of the network.";
+				== net_->input_blobs()[0]->cpu_data())
+			<< "Input channels are not wrapping the input layer of the network.";
 	}
 
 }

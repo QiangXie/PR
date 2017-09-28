@@ -20,18 +20,18 @@ DEFINE_string(name2id, "/home/swli/Data/end2endPlateTest/name2id.txt",
 
 std::wstring s2ws(const std::string& str)
 {
-	    using convert_typeX = std::codecvt_utf8<wchar_t>;
-	        std::wstring_convert<convert_typeX, wchar_t> converterX;
+	using convert_typeX = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_typeX, wchar_t> converterX;
 
-		    return converterX.from_bytes(str);
+	return converterX.from_bytes(str);
 }
 
 std::string ws2s(const std::wstring& wstr)
 {
-	    using convert_typeX = std::codecvt_utf8<wchar_t>;
-	        std::wstring_convert<convert_typeX, wchar_t> converterX;
+	using convert_typeX = std::codecvt_utf8<wchar_t>;
+	std::wstring_convert<convert_typeX, wchar_t> converterX;
 
-		    return converterX.to_bytes(wstr);
+	return converterX.to_bytes(wstr);
 }
 
 
@@ -78,7 +78,7 @@ int main(int argc, char ** argv)
 	LOG(INFO) << "Classifier init success!";
 	//init segmenter
 	CharsSegment * segmenter = new CharsSegment();
-	
+
 	vector<vector<int> > plates;
 	std::string img_name;
 	while(infile >> vehicle_image){
@@ -92,7 +92,7 @@ int main(int argc, char ** argv)
 
 		plates = plate_detector.Detect(vehicle_im_cv);
 		if(plates.size() == 1){
-			
+
 			int plate_x = plates[0][0];
 			int plate_y = plates[0][1];
 			int plate_w = plates[0][2];

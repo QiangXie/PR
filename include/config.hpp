@@ -7,7 +7,7 @@ namespace swpr{
 	const int BATCH_SIZE = 8;
 	//DEEP means char color deeper than background
 	enum Color { DEEP, LIGHT};
-	
+
 	const int kChineseSize = 28;
 }
 
