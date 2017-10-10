@@ -43,6 +43,11 @@ set(
 	end2end_test.cpp
 )
 
+set(
+	EXP_MAIN_LIST
+	exp_main.cpp
+	)
+
 add_executable(
 	segment_test 
 	${SEGMENT_TEST_SRC_LIST}
@@ -108,6 +113,18 @@ add_executable(
 	)
 target_link_libraries(
 	end2end_test	
+	swpr
+	glog
+	gflags
+	boost_system
+	${OpenCV_LIBS}
+	)
+add_executable(
+	exp_main	
+	${EXP_MAIN_LIST}
+	)
+target_link_libraries(
+	exp_main	
 	swpr
 	glog
 	gflags

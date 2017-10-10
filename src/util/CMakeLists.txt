@@ -8,6 +8,8 @@ set(
 	func.cpp
 	recognition.cpp
 	detection.cpp
+	pr.cpp
+	config.cpp
 	)
 
 include_directories(

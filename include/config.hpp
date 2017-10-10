@@ -1,14 +1,20 @@
 #ifndef _CONFIG_HPP_
 #define _CONFIG_HPP_
-namespace swpr{
-	const bool SAVE_SEGMENT_FLAG = true;
-	const int  DETEC_CLS_NUM = 1;
-	const float CONF_THRESH = 0.2;
-	const int BATCH_SIZE = 8;
-	//DEEP means char color deeper than background
-	enum Color { DEEP, LIGHT};
+#include <string>
 
-	const int kChineseSize = 28;
+namespace swpr{
+	enum Color { DEEP, LIGHT};
+	extern const bool SAVE_SEGMENT_FLAG;
+	extern const int  DETEC_CLS_NUM;
+	extern const float CONF_THRESH;
+	extern const int BATCH_SIZE;
+	extern const int kChineseSize;
+	extern std::string detector_model_file;
+	extern std::string detector_weights_file;
+	extern std::string model_file;
+	extern std::string trained_file;
+	extern std::string mean_file;
+	extern std::string lable_file;
 }
 
 #endif
