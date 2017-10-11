@@ -4,6 +4,7 @@
 
 namespace swpr{
 	enum Color { DEEP, LIGHT};
+	extern const int GPU_ID;
 	extern const bool SAVE_SEGMENT_FLAG;
 	extern const int  DETEC_CLS_NUM;
 	extern const float CONF_THRESH;

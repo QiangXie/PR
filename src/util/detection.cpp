@@ -44,7 +44,7 @@ namespace swpr{
 		timer.tic();
 		net_->Forward();
 		timer.toc();
-		LOG(INFO) << "Forward took " << timer.getTotalTime() << " ms.";
+		//LOG(INFO) << "Forward took " << timer.getTotalTime() << " ms.";
 
 		//Copy the output layer to a std::vector
 		Blob<float>* result_blob = net_->output_blobs()[0];

@@ -2,6 +2,7 @@
 #include <string>
 
 namespace swpr{
+	const int GPU_ID = 15;
 	const bool SAVE_SEGMENT_FLAG = true;
 	const int  DETEC_CLS_NUM = 1;
 	const float CONF_THRESH = 0.2;

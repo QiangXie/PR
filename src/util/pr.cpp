@@ -2,7 +2,7 @@
 
 namespace swpr{
 	plateRecognizer::plateRecognizer(){
-		Caffe::SetDevice(0);
+		Caffe::SetDevice(GPU_ID);
 		Caffe::set_mode(Caffe::GPU);
 		this->plate_detector = new Detector(detector_model_file, detector_weights_file);
 		this->classifier = new Classifier(model_file, trained_file, mean_file, lable_file); 
