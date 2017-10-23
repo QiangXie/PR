@@ -17,7 +17,7 @@ namespace swpr {
 		m_BluePercent = DEFAULT_BLUEPERCEMT;
 		m_WhitePercent = DEFAULT_WHITEPERCEMT;
 		m_debug = DEFAULT_DEBUG;
-		this->maskImage = imread("./maks_bin_0.jpg",IMREAD_GRAYSCALE);
+		this->maskImage = imread(MASK_JPG_PATH,IMREAD_GRAYSCALE);
 	}
 
 

@@ -64,9 +64,13 @@ namespace swpr{
 				for(int j = 0; j < predictions.size(); ++j){
 					result += predictions[j].first;
 				}
+				if(matChars.size() != 7){
+					return 0x04;
+				}
+				else{
+					return 0;
+				}
 			}
 		}
-
-		return 0;
 	}
 }

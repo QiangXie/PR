@@ -4,7 +4,10 @@
 namespace swpr{
 
 	Detector::Detector(const string & model_file,
-			const string & weights_file)
+			   const string & weights_file,
+			   int  class_num,
+			   float  conf_thresh)
+		:DETEC_CLS_NUM(class_num), CONF_THRESH(conf_thresh)
 	{
 		const string mean_file = "";
 		const string mean_value = "104,117,123";

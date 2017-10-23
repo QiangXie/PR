@@ -4,9 +4,10 @@
 namespace swpr{
 	const int GPU_ID = 15;
 	const bool SAVE_SEGMENT_FLAG = true;
-	const int  DETEC_CLS_NUM = 1;
-	const float CONF_THRESH = 0.2;
+	//const int  DETEC_CLS_NUM = 1;
+	//const float CONF_THRESH = 0.2;
 	const int BATCH_SIZE = 8;
+	const std::string MASK_JPG_PATH = "../models/segment_model/maks_bin_0.jpg";
 	//DEEP means char color deeper than background
 
 	const int kChineseSize = 28;
