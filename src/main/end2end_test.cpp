@@ -5,6 +5,7 @@
 #include "segment.hpp"
 #include <gflags/gflags.h>
 #include <glog/logging.h>
+#include "config.hpp"
 
 using namespace swpr;
 #define RECTANGLE 0
@@ -77,7 +78,7 @@ int main(int argc, char ** argv)
 	Classifier classifier(model_file, trained_file, mean_file, lable_file);
 	LOG(INFO) << "Classifier init success!";
 	//init segmenter
-	CharsSegment * segmenter = new CharsSegment();
+	CharsSegment * segmenter = new CharsSegment(MASK_JPG_PATH);
 
 	vector<vector<int> > plates;
 	std::string img_name;

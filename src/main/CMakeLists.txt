@@ -47,66 +47,70 @@ set(
 	EXP_MAIN_LIST
 	exp_main.cpp
 	)
-
-add_executable(
-	segment_test 
-	${SEGMENT_TEST_SRC_LIST}
+set(
+	ITS_MAIN_LIST
+	its_test.cpp
 	)
 
-target_link_libraries(
-	segment_test 
-	swpr
-	#${OpenCV_LIBS}
-	)
-add_executable(
-	segment_experiment 
-	${SEGMENT_EXPERIMENT_SRC_LIST}
-	)
-
-target_link_libraries(
-	segment_experiment 
-	swpr
-	#${OpenCV_LIBS}
-	)
-
-add_executable(
-	recognition_test
-	${RECOGNITION_TEST_SRC_LIST}
-	)
-
-target_link_libraries(
-	recognition_test
-	swpr
-	glog
-	boost_system
-	#${OpenCV_LIBS}
-	)
-
-add_executable(
-	recognition_and_reg_test
-	${SEG_AND_RECOG_TEST_SRC_LIST}
-	)
-
-target_link_libraries(
-	recognition_and_reg_test
-	swpr
-	glog
-	boost_system
-	#${OpenCV_LIBS}
-	)
-
-add_executable(
-	pick_plate	
-	${PICK_PLATE_SRC_LIST}
-	)
-
-target_link_libraries(
-	pick_plate	
-	swpr
-	glog
-	boost_system
-	#${OpenCV_LIBS}
-	)
+#add_executable(
+#	segment_test 
+#	${SEGMENT_TEST_SRC_LIST}
+#	)
+#
+#target_link_libraries(
+#	segment_test 
+#	swpr
+#	#${OpenCV_LIBS}
+#	)
+#add_executable(
+#	segment_experiment 
+#	${SEGMENT_EXPERIMENT_SRC_LIST}
+#	)
+#
+#target_link_libraries(
+#	segment_experiment 
+#	swpr
+#	#${OpenCV_LIBS}
+#	)
+#
+#add_executable(
+#	recognition_test
+#	${RECOGNITION_TEST_SRC_LIST}
+#	)
+#
+#target_link_libraries(
+#	recognition_test
+#	swpr
+#	glog
+#	boost_system
+#	#${OpenCV_LIBS}
+#	)
+#
+#add_executable(
+#	recognition_and_reg_test
+#	${SEG_AND_RECOG_TEST_SRC_LIST}
+#	)
+#
+#target_link_libraries(
+#	recognition_and_reg_test
+#	swpr
+#	glog
+#	boost_system
+#	#${OpenCV_LIBS}
+#	)
+#
+#add_executable(
+#	pick_plate	
+#	${PICK_PLATE_SRC_LIST}
+#	)
+#
+#target_link_libraries(
+#	pick_plate	
+#	swpr
+#	glog
+#	boost_system
+#	#${OpenCV_LIBS}
+#	)
 add_executable(
 	end2end_test
 	${END2END_TEST_LIST}
@@ -125,6 +129,18 @@ add_executable(
 	)
 target_link_libraries(
 	exp_main	
+	swpr
+	glog
+	gflags
+	boost_system
+	${OpenCV_LIBS}
+	)
+add_executable(
+	its_main	
+	${ITS_MAIN_LIST}
+	)
+target_link_libraries(
+	its_main	
 	swpr
 	glog
 	gflags

@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <codecvt>
 #include <string>
+#include "config.hpp"
 
 std::wstring s2ws(const std::string& str)
 {
@@ -41,7 +42,7 @@ int main(int argc, char ** argv){
 	std::wstring file_wstr = s2ws(file); 
 	cv::Mat plate_img = imread(file);		
 	std::vector<Mat> matChars;
-	CharsSegment * segmenter = new CharsSegment();	
+	CharsSegment * segmenter = new CharsSegment(MASK_JPG_PATH);	
 	int result = segmenter->charsSegment(plate_img, matChars);
 	std::wstring file_name = L"";	
 	std::vector<Prediction> ans;

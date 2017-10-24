@@ -1,5 +1,4 @@
 #include "segment.hpp"
-#include "config.hpp"
 #include "character.hpp"
 #include "func.hpp"
 
@@ -10,14 +9,14 @@ namespace swpr {
 	const float DEFAULT_BLUEPERCEMT = 0.3f;
 	const float DEFAULT_WHITEPERCEMT = 0.1f;
 
-	CharsSegment::CharsSegment(){
+	CharsSegment::CharsSegment(const string & mask_jpg_path){
 		m_LiuDingSize = DEFAULT_LIUDING_SIZE;
 		m_theMatWidth = DEFAULT_MAT_WIDTH;
 		m_ColorThreshold = DEFAULT_COLORTHRESHOLD;
 		m_BluePercent = DEFAULT_BLUEPERCEMT;
 		m_WhitePercent = DEFAULT_WHITEPERCEMT;
 		m_debug = DEFAULT_DEBUG;
-		this->maskImage = imread(MASK_JPG_PATH,IMREAD_GRAYSCALE);
+		this->maskImage = imread(mask_jpg_path, IMREAD_GRAYSCALE);
 	}
 
 

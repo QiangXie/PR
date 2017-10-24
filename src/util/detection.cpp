@@ -1,13 +1,13 @@
 #include "detection.hpp"
-#include "config.hpp"
 
 namespace swpr{
 
 	Detector::Detector(const string & model_file,
 			   const string & weights_file,
 			   int  class_num,
-			   float  conf_thresh)
-		:DETEC_CLS_NUM(class_num), CONF_THRESH(conf_thresh)
+			   float  conf_thresh,
+			   int batch_size)
+		:detec_cls_num(class_num), conf_thresh(conf_thresh), batch_size(batch_size)
 	{
 		const string mean_file = "";
 		const string mean_value = "104,117,123";
@@ -72,7 +72,7 @@ namespace swpr{
 			CHECK_EQ(d.size(), 7);
 			const float score = d[2];
 			const int label = static_cast<int>(d[1]);
-			if(label == DETEC_CLS_NUM && score >= CONF_THRESH){
+			if(label == detec_cls_num && score >= conf_thresh){
 				vector<int> bbox;
 				bbox.push_back(static_cast<int>(d[3] * img.cols));
 				bbox.push_back(static_cast<int>(d[4] * img.rows));
@@ -88,9 +88,9 @@ namespace swpr{
 
 	std::vector<std::vector<std::vector<int> > > Detector::DetectBatch(const std::vector<cv::Mat> & imgs){
 
-		CHECK(imgs.size() == BATCH_SIZE) << "Inputs imgs do not equal batch size.";
+		CHECK(imgs.size() == batch_size) << "Inputs imgs do not equal batch size.";
 		Blob<float>* input_layer = net_->input_blobs()[0];
-		input_layer->Reshape(BATCH_SIZE, num_channels_,
+		input_layer->Reshape(batch_size, num_channels_,
 				input_geometry_.height, input_geometry_.width);
 		Timer_ timer;
 		//Forward dimension change to all layers
@@ -121,7 +121,7 @@ namespace swpr{
 
 		std::vector<std::vector<std::vector<int> > > batchBboxes;
 		vector<vector<int> > bboxes;
-		for(int i = 0;i < BATCH_SIZE; ++i){
+		for(int i = 0;i < batch_size; ++i){
 			batchBboxes.push_back(bboxes);
 		}
 
@@ -133,7 +133,7 @@ namespace swpr{
 			const int image_id = static_cast<int>(d[0]);
 			const float score = d[2];
 			const int label = static_cast<int>(d[1]);
-			if(label == DETEC_CLS_NUM && score >= CONF_THRESH){
+			if(label == detec_cls_num && score >= conf_thresh){
 				vector<int> bbox;
 				bbox.push_back(static_cast<int>(d[3] * imgs[image_id].cols));
 				bbox.push_back(static_cast<int>(d[4] * imgs[image_id].rows));

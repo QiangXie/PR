@@ -22,7 +22,8 @@ namespace swpr{
 			Detector(const string & model_file,
 				 const string & weights_file,
 				 int class_num = 1,
-				 float conf_thresh = 0.2);
+				 float conf_thresh = 0.2,
+				 int batch_size = 8);
 			std::vector<std::vector<int> > Detect(const cv::Mat & img);
 			std::vector<std::vector<std::vector<int> > > DetectBatch(const std::vector<cv::Mat> & imgs);
 		private:
@@ -36,8 +37,9 @@ namespace swpr{
 			cv::Size input_geometry_;
 			int num_channels_;
 			cv::Mat mean_;
-			const int DETEC_CLS_NUM;
-			const float CONF_THRESH;
+			const int detec_cls_num;
+			const float conf_thresh;
+			const int batch_size; 
 
 	};
 

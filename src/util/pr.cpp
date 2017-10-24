@@ -6,7 +6,7 @@ namespace swpr{
 		Caffe::set_mode(Caffe::GPU);
 		this->plate_detector = new Detector(detector_model_file, detector_weights_file);
 		this->classifier = new Classifier(model_file, trained_file, mean_file, lable_file); 
-		this->segmenter = new CharsSegment();
+		this->segmenter = new CharsSegment(MASK_JPG_PATH);
 		LOG(INFO) << "Plate recognizer init success!";
 	}	
 	plateRecognizer::~plateRecognizer(){

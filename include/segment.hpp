@@ -6,15 +6,16 @@
 #include <map>
 #include "character.hpp"
 #include "func.hpp"
-#include "config.hpp"
+#include <string>
 
 using namespace cv;
+using namespace std;
 
 namespace swpr{
 
 	class CharsSegment {
 		public:
-			CharsSegment();
+			CharsSegment(const string & mask_jpg_path);
 
 			int charsSegment(Mat input, std::vector<Mat>& resultVec);
 			Color getPlateColor(Mat input);
